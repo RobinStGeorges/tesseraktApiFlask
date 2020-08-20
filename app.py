@@ -1,6 +1,8 @@
 from flask import Flask, redirect, jsonify
 from flask_mysqldb import MySQL
 import yaml
+import json
+
 import logging
 
 app = Flask(__name__)
@@ -116,6 +118,24 @@ def setIsFinishedById(id, email):
 ##################################################
 #   Reponse
 ##################################################
+
+##################################################
+#   User
+##################################################
+
+@app.route('/isAdmin/<email>')
+def getIsAdmin(email):
+    cur = mysql.connection.cursor()
+    userResponse = cur.execute('select * from users where email like "' + email + '"')
+    if userResponse > 0:
+        user = cur.fetchall()
+        cur.close()
+        if user[0][6]:
+            return jsonify(1)
+        else:
+            return jsonify(0)
+    cur.close()
+    return jsonify(0)
 
 if __name__ == '__main__':
     app.run(debug=True)
