@@ -79,13 +79,23 @@ def setIsStartedById(id, email):
     cur = mysql.connection.cursor()
     email = email.replace('%40', '@')
     email = email.replace('%point', '.')
-    curResult = cur.execute('update userdata set is_started = true, date_start = CURRENT_TIMESTAMP where id_exercice = ' + id + ' and email like "' + email + '"')
-    if curResult > 0:
-        result = cur.fetchall()
-        cur.close()
+
+    # check if line already exist
+
+    curCheck = mysql.connection.cursor()
+    responseCheck = curCheck.execute('select * from userdata where id_exercice = ' + id + ' and email like "' + email + '"')
+    curCheck.close()
+    if responseCheck > 0:
         return jsonify(1)
-    cur.close()
-    app.logger.info(email)
+    else:
+        curResultCreate = cur.execute(
+            'insert into userdata (id_exercice, email, is_started) values (' + id + ', "' + email + '", true)'
+        )
+        if curResultCreate > 0:
+            cur.close()
+            return jsonify(1)
+        cur.close()
+        app.logger.info(email)
     return jsonify(0)
 
 @app.route('/setIsFinished/<id>/<email>')
