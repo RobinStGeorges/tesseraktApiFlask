@@ -119,6 +119,17 @@ def setIsFinishedById(id, email):
 #   Reponse
 ##################################################
 
+@app.route('/getUserResponse')
+def getUserResponse():
+    cur = mysql.connection.cursor()
+    responseCur = cur.execute('select * from userresponse')
+    if responseCur > 0:
+        responses = cur.fetchall()
+        cur.close()
+        return jsonify(responses)
+    cur.close()
+
+
 ##################################################
 #   User
 ##################################################
@@ -136,6 +147,28 @@ def getIsAdmin(email):
             return jsonify(0)
     cur.close()
     return jsonify(0)
+
+@app.route('/delete/<mail>')
+def deleteUserByMail(mail):
+    mail = mail.replace('%40', '@')
+    mail = mail.replace('%point', '.')
+    mysql.connection.autocommit(on=True)
+    cur = mysql.connection.cursor()
+    responseCur = cur.execute('DELETE FROM users where email like "' + mail + '"')
+    if responseCur > 0:
+        return jsonify(1)
+    cur.close()
+    return jsonify(0)
+
+@app.route('/userdata/<mail>')
+def getUserDataByMail(mail):
+    cur = mysql.connection.cursor()
+    dataCur = cur.execute('select * from userdata where email like "' + mail + '"')
+    if dataCur > 0:
+        data = cur.fetchall()
+        cur.close()
+        return jsonify(data)
+    cur.close()
 
 if __name__ == '__main__':
     app.run(debug=True)
