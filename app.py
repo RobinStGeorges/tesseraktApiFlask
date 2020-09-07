@@ -2,10 +2,10 @@ from flask import Flask, redirect, jsonify
 from flask_mysqldb import MySQL
 import yaml
 import json
-
-import logging
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app)
 
 #   Config
 db = yaml.load(open('db.yaml'))
@@ -28,6 +28,7 @@ def index():
 
 
 @app.route('/cours')
+@cross_origin(supports_credentials=True)
 def getAllCours():
     cur = mysql.connection.cursor()
     coursCur = cur.execute('select * from cours')
@@ -128,7 +129,51 @@ def getUserResponse():
         cur.close()
         return jsonify(responses)
     cur.close()
+    
+@app.route('/checkIsValid/<id>/<email>')
+def checkIsValid():
+    cur = mysql.connection.cursor()
+    responseCur = cur.execute('select * from userdata where id_exercice = ' + id + ' and email like "' + email +'"')
+    if responseCur > 0:
+        responses = cur.fetchall()
+        cur.close()
+        return jsonify(0)
+    cur.close()
+    return jsonify(1)
+    
+@app.route('/getCubesValuesAll')
+def getCubeValueAll():
+    cur = mysql.connection.cursor()
+    responseCur = cur.execute('select id_cube, action from idcudetoaction')
+    if responseCur > 0:
+        responses = cur.fetchall()
+        cur.close()
+        return jsonify(responses)
+    cur.close()
+    
+@app.route('/setCubesValues/<value>', methods = ['GET', 'POST'])
+def setCubesValues(value):
+    mysql.connection.autocommit(on=True)
+    tabVal = value.split(';;')
+    del tabVal[0]
+    curResultInsert = ''
+    for i in range(0, len(tabVal), 1):
+        tabi = tabVal[i]
+        cur = mysql.connection.cursor()
+        curResultInsert += ' ' + insertCubeToAction(str(i), str(tabi))
+    return jsonify(curResultInsert);
+    
 
+    
+def insertCubeToAction(id, action):
+    cur = mysql.connection.cursor()
+    returnValue = ' none '
+    curResultInsert = cur.execute('insert into idcudetoaction (id_cube, action) values (' + str(id)+', "' + str(action) +'") ON DUPLICATE KEY UPDATE action = "' + str(action) +'"')
+    if curResultInsert > 1:
+        returnValue = curResultInsert.fetchall()
+    cur.close()
+    return returnValue
+    
 
 ##################################################
 #   User
