@@ -26,3 +26,5 @@ $ pip install mysql-python
 $ pip install mysqlclient
 python -m pip install pyyaml
 pip install flask-mysqldb
+
+flask run

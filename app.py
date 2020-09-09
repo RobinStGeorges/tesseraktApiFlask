@@ -1,8 +1,12 @@
-from flask import Flask, redirect, jsonify
+from flask import Flask, redirect, jsonify, request, json
 from flask_mysqldb import MySQL
 import yaml
 import json
 from flask_cors import CORS, cross_origin
+from datetime import datetime
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
+from flask_jwt_extended import create_access_token
 
 app = Flask(__name__)
 CORS(app)
@@ -13,9 +17,11 @@ app.config['MYSQL_HOST'] = db['mysql_host']
 app.config['MYSQL_USER'] = db['mysql_user']
 app.config['MYSQL_PASSWORD'] = db['mysql_password']
 app.config['MYSQL_DB'] = db['mysql_db']
+app.config['JWT_SECRET_KEY'] = 'secret'
 
 mysql = MySQL(app)
-
+bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
 
 @app.route('/')
 def index():
@@ -161,7 +167,7 @@ def setCubesValues(value):
         tabi = tabVal[i]
         cur = mysql.connection.cursor()
         curResultInsert += ' ' + insertCubeToAction(str(i), str(tabi))
-    return jsonify(curResultInsert);
+    return 'true';
     
 
     
@@ -169,10 +175,11 @@ def insertCubeToAction(id, action):
     cur = mysql.connection.cursor()
     returnValue = ' none '
     curResultInsert = cur.execute('insert into idcudetoaction (id_cube, action) values (' + str(id)+', "' + str(action) +'") ON DUPLICATE KEY UPDATE action = "' + str(action) +'"')
-    if curResultInsert > 1:
-        returnValue = curResultInsert.fetchall()
+    if curResultInsert > 0:
+        returnValue = cur.fetchall()
+        return 'oui'
     cur.close()
-    return returnValue
+    return 'non'
     
 
 ##################################################
@@ -214,6 +221,54 @@ def getUserDataByMail(mail):
         cur.close()
         return jsonify(data)
     cur.close()
+    
+@app.route('/users/login', methods=['POST'])
+def login():
+    cur = mysql.connection.cursor()
+    email = request.get_json()['email']
+    password = request.get_json()['password']
+    result = ""
+
+    cur.execute("SELECT * FROM users where email = '" + str(email) + "'")
+    rv = cur.fetchone()
+    if bcrypt.check_password_hash(rv[2], password):
+        access_token = create_access_token(
+            identity={
+                'first_name': rv[4],
+                'last_name': rv[5],
+                'email': rv[1]
+            })
+        result = access_token
+    else:
+        result = jsonify({"error": "Invalid username and password"})
+
+    return result
+    
+@app.route('/users/register', methods=['POST'])
+def register():
+    cur = mysql.connection.cursor()
+    first_name = request.get_json()['first_name']
+    last_name = request.get_json()['last_name']
+    email = request.get_json()['email']
+    password = bcrypt.generate_password_hash(
+        request.get_json()['password']).decode('utf-8')
+    created = datetime.utcnow()
+
+    cur.execute(
+        "INSERT INTO users (first_name, last_name, email, password, created) VALUES ('"
+        + str(first_name) + "','" + str(last_name) + "','" + str(email) +
+        "','" + str(password) + "','" + str(created) + "')")
+    mysql.connection.commit()
+
+    result = {
+        'first_name': first_name,
+        'last_name': last_name,
+        'email': email,
+        'password': password,
+        'created': created
+    }
+
+    return jsonify({'result': result})
 
 if __name__ == '__main__':
     app.run(debug=True)
