@@ -12,6 +12,8 @@ $ pip install flask
 
 $ sudo apt-get install libmariadb-dev
 
+in flask
 $ pip install flask-mysqldb
+
 
 flask run
