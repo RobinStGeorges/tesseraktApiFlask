@@ -1,5 +1,5 @@
 from flask import Flask, redirect, jsonify, request, json
-from flask_mysqldb import MySQL
+from flaskext.mysql import MySQL
 import yaml
 import json
 from flask_cors import CORS, cross_origin
