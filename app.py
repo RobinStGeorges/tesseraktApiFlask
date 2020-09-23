@@ -1,5 +1,5 @@
 from flask import Flask, redirect, jsonify, request, json
-from flaskext.mysql import MySQL
+from flask_mysqldb import MySQL
 import yaml
 import json
 from flask_cors import CORS, cross_origin
@@ -333,4 +333,4 @@ def getCarCommande():
     cur.close()
     
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=80, host='0.0.0.0')
