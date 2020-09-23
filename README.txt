@@ -12,8 +12,12 @@ $ pip install flask
 
 $ sudo apt-get install libmariadb-dev
 
-in flask
-$ pip install flask-mysqldb
+$ pip3 install flask-mysqldb
+$ pip3 install yaml
+pip3 install flask_bcrypt
+$ pip3 install flask_cors
+$ pip3 install pyyaml
+$ pip3 install flask_jwt_extended
 
 
 flask run

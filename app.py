@@ -212,10 +212,62 @@ def deleteUserByMail(mail):
     cur.close()
     return jsonify(0)
 
-@app.route('/userdata/<mail>')
-def getUserDataByMail(mail):
+@app.route('/getUserDataByMail/<email>', methods = ['GET', 'POST'])
+def getUserDataByMail(email):
+    #args = request.args
+    #mail = args['mail']
     cur = mysql.connection.cursor()
-    dataCur = cur.execute('select * from userdata where email like "' + mail + '"')
+    dataCur = cur.execute('select * from userdata where email like "' + email + '"')
+    if dataCur > 0:
+        data = cur.fetchall()
+        cur.close()
+        return jsonify(data)
+    cur.close()
+
+@app.route('/getUserDataStarted/<email>')
+def getUserDataStartedByMail(email):
+    cur = mysql.connection.cursor()
+    dataCur = cur.execute('select ud.id_exercice, e.titre from userdata as ud join exercices as e on e.id_exercice = ud.id_exercice where ud.email like "' + email + '" and ud.is_started = 1')
+    if dataCur > 0:
+        data = cur.fetchall()
+        cur.close()
+        return jsonify(data)
+    cur.close()
+    
+@app.route('/getUserDataFinished/<email>')
+def getUserDataFinished(email):
+    cur = mysql.connection.cursor()
+    dataCur = cur.execute('select ud.id_exercice, e.titre, ud.date_end from userdata as ud join exercices as e on e.id_exercice = ud.id_exercice where ud.email like "' + email + '" and ud.is_finished = 1')
+    if dataCur > 0:
+        data = cur.fetchall()
+        cur.close()
+        return jsonify(data)
+    cur.close()
+    
+@app.route('/getDateDif/<email>')
+def getDateDif(email):
+    cur = mysql.connection.cursor()
+    dataCur = cur.execute('select date_start, date_end, id_exercice from userdata as ud  where ud.email like "' + email + '" and ud.is_started = 1 and ud.is_finished = 1')
+    if dataCur > 0:
+        data = cur.fetchall()
+        cur.close()
+        return jsonify(data)
+    cur.close()
+
+@app.route('/getCoursNameById/<id>')
+def getCoursNameById(id):
+    cur = mysql.connection.cursor()
+    dataCur = cur.execute('select titre from exercices where id_exercice = '+ id)
+    if dataCur > 0:
+        data = cur.fetchall()
+        cur.close()
+        return jsonify(data)
+    cur.close()
+
+@app.route('/getUserByMail/<email>')
+def getUserByMail(email):
+    cur = mysql.connection.cursor()
+    dataCur = cur.execute('select first_name, last_name, created from users where email like "' + email + '"')
     if dataCur > 0:
         data = cur.fetchall()
         cur.close()
@@ -269,6 +321,16 @@ def register():
     }
 
     return jsonify({'result': result})
-
+    
+@app.route('/getCarCommande')
+def getCarCommande():
+    cur = mysql.connection.cursor()
+    dataCur = cur.execute('select ur.coord_x, ur.coord_y, ai.action from userresponse as ur join idcudetoaction as icta on ur.id_box = icta.id_cube join actionid as ai on ai.action = icta.action')
+    if dataCur > 0:
+        data = cur.fetchall()
+        cur.close()
+        return jsonify(data)
+    cur.close()
+    
 if __name__ == '__main__':
     app.run(debug=True)
