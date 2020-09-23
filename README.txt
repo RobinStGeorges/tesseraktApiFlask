@@ -1,20 +1,8 @@
-py -m venv env
-source env/Scripts/activate
-
-$ export FLASK_APP=app.py
-$ python -m flask run
-
-
-|||||||||||||||||
-$ py -m venv flask
-
-$ cd flask
-
-Now let's activate the virtualenv:
+Let's activate the virtualenv:
 
 $ cd flask/scripts
 
-$ activate
+$ source activate
 
 Now you should see (flask) on the left of the command line.
 
@@ -22,9 +10,14 @@ Let's install flask:
 
 $ pip install flask
 
-$ pip install mysql-python
-$ pip install mysqlclient
-python -m pip install pyyaml
-pip install flask-mysqldb
+$ sudo apt-get install libmariadb-dev
+
+$ pip3 install flask-mysqldb
+$ pip3 install yaml
+pip3 install flask_bcrypt
+$ pip3 install flask_cors
+$ pip3 install pyyaml
+$ pip3 install flask_jwt_extended
+
 
 flask run
