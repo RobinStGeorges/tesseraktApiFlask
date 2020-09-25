@@ -36,6 +36,6 @@ Lors de la première fois, il faut creer un environnement virtuel python à la b
 
 * Enfin, pour lancer le projet
 
-> flask run --host='0.0.0.0'
+> flask run --host=0.0.0.0
 
 ### Et voila ! 
