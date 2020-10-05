@@ -341,23 +341,23 @@ def downloadCours():
 
     ress=""
 
-    col = ""
-    val = ""
+    col = ''
+    val = ''
     isString = ["titre", "description", "contenue", "mediaPath"]
     for item in data:
-        col = ""
-        val += "("
+        col = ''
+        val += '('
         for value in item:
-            col += " " + str(value) + ","
+            col += ' ' + str(value) + ','
             # check if field is string field, add " "
             if str(value) in isString:
-                val += "\"" + str(item[value]) + "\","
+                val += '"' + str(item[value]) + '",'
             else:
-                val += " " + str(item[value]) + ","
+                val += ' ' + str(item[value]) + ','
         val = val[:-1]
-        val += "),"
+        val += '),'
     val = val[:-1]
-    ress += "insert into cours (" + col + ") values " + val + ";"
+    ress += 'insert into cours (' + col + ') values ' + val + ';'
     cur = mysql.connection.cursor()
     return jsonify(ress)
     dataCur = cur.execute(ress)
