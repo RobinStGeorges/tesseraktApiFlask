@@ -7,6 +7,7 @@ from datetime import datetime
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_jwt_extended import create_access_token
+import requests
 
 app = Flask(__name__)
 CORS(app)
@@ -331,6 +332,59 @@ def getCarCommande():
         cur.close()
         return jsonify(data)
     cur.close()
+    
+@app.route('/downloadCours', methods=["GET", "POST"])
+def downloadCOurs():
+    #response = requests.get('https://jsonplaceholder.typicode.com/users')
+    response = requests.get('http://kireta.pythonanywhere.com/getCoursData')
+    data = response.json()
+
+    ress="truncate table cours;"
+
+    col = ""
+    val = ""
+    isString = ["titre", "description", "contenue", "mediaPath"]
+    for item in data:
+        col = ""
+        val += "("
+        for value in item:
+            col += " " + str(value) + ","
+            # check if field is string field, add " "
+            if str(value) in isString:
+                val += "\"" + str(item[value]) + "\","
+            else:
+                val += " " + str(item[value]) + ","
+        val = val[:-1]
+        val += "),<br>"
+    val = val[:-1]
+    ress += "insert into cours (" + col + ") values " + val + ";"
+    return ress
+    
+@app.route('/downloadExercice', methods=["GET", "POST"])
+def downloadExercice():
+    response = requests.get('http://kireta.pythonanywhere.com/getExerciceData')
+    data = response.json()
+
+    ress="truncate table cours;"
+
+    col = ""
+    val = ""
+    isString = ["titre", "description", "contenue", "mediaPath", "imgPath", "imgReponsePath", "cube_needed", "has_finished", "coord_finish"]
+    for item in data:
+        col = ""
+        val += "("
+        for value in item:
+            col += " " + str(value) + ","
+            # check if field is string field, add " "
+            if str(value) in isString:
+                val += "\"" + str(item[value]) + "\","
+            else:
+                val += " " + str(item[value]) + ","
+        val = val[:-1]
+        val += "),<br>"
+    val = val[:-1]
+    ress += "insert into cours (" + col + ") values " + val + ";"
+    return ress
     
 
 app.run(debug=True, port=80, host='0.0.0.0')
