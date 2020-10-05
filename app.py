@@ -339,7 +339,7 @@ def downloadCours():
     response = requests.get('http://kireta.pythonanywhere.com/getCoursData')
     data = response.json()
 
-    ress="truncate table cours;"
+    ress=""
 
     col = ""
     val = ""
@@ -355,10 +355,11 @@ def downloadCours():
             else:
                 val += " " + str(item[value]) + ","
         val = val[:-1]
-        val += "),<br>"
+        val += "),"
     val = val[:-1]
     ress += "insert into cours (" + col + ") values " + val + ";"
     cur = mysql.connection.cursor()
+    return jsonify(ress)
     dataCur = cur.execute(ress)
     
     return dataCur
