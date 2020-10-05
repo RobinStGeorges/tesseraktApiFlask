@@ -334,7 +334,7 @@ def getCarCommande():
     cur.close()
     
 @app.route('/downloadCours', methods=["GET", "POST"])
-def downloadCOurs():
+def downloadCours():
     #response = requests.get('https://jsonplaceholder.typicode.com/users')
     response = requests.get('http://kireta.pythonanywhere.com/getCoursData')
     data = response.json()
@@ -358,7 +358,10 @@ def downloadCOurs():
         val += "),<br>"
     val = val[:-1]
     ress += "insert into cours (" + col + ") values " + val + ";"
-    return ress
+    cur = mysql.connection.cursor()
+    dataCur = cur.execute(ress)
+    
+    return dataCur
     
 @app.route('/downloadExercice', methods=["GET", "POST"])
 def downloadExercice():
