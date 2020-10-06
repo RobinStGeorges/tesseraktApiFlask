@@ -16,8 +16,6 @@ CREATE TABLE IF NOT EXISTS `cours` (
 `mediaPath` varchar(255)
 )DEFAULT CHARSET=utf8;
 
-
-
 CREATE TABLE IF NOT EXISTS `exercice`(
 `id_exercice` int(3) NOT NULL, 
 `titre` varchar(255) NOT NULL DEFAULT "titre default",
