@@ -36,4 +36,25 @@ CREATE TABLE IF NOT EXISTS `exercice`(
 `coord_finish` varchar(255),
 `x_start` int(3),
 `y_start` int(3)
-);
+)DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `userresponse` (
+`email` varchar(255),
+`coord_x` int(3),
+`coord_y` int(3)
+)DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `idcudetoaction` (
+`email` varchar(255),
+`id_cube` int(3),
+`action` varchar(255)
+)DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `userorder` (
+`email` varchar(255),
+`statut`varchar(255),
+`date_init` DATE,
+`date_sent` DATE,
+`date_received` DATE
+)DEFAULT CHARSET=utf8;
+
