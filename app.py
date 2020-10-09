@@ -114,7 +114,7 @@ def setIsFinishedById(id, email):
     cur = mysql.connection.cursor()
     email = email.replace('%40', '@')
     email = email.replace('%point', '.')
-    curResult = cur.execute('update userdata set is_finished = true, date_start = CURRENT_TIMESTAMP where id_exercice = ' + id + ' and email like "' + email + '"')
+    curResult = cur.execute('update userdata set is_finished = true, date_end = CURRENT_TIMESTAMP where id_exercice = ' + id + ' and email like "' + email + '"')
     if curResult > 0:
         cur.close()
         return jsonify(1)
