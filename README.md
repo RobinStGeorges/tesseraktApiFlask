@@ -29,9 +29,13 @@ Lors de la première fois, il faut creer un environnement virtuel python à la b
 > $ sudo apt-get install libmariadb-dev
 
 > $ pip3 install flask-mysqldb
+
 > $pip3 install flask_bcrypt
+
 > $ pip3 install flask_cors
+
 > $ pip3 install pyyaml
+
 > $ pip3 install flask_jwt_extended
 
 * Enfin, pour lancer le projet
