@@ -356,39 +356,51 @@ def downloadCours():
                 val += ' ' + str(item[value]) + ','
         val = val[:-1]
         val += '),'
+    col = col[:-1]
     val = val[:-1]
-    ress += 'insert into cours (' + col + ') values ' + val + ';'
+
+    ress += 'INSERT INTO cours (' + col + ') VALUES ' + val + ';'
+
     cur = mysql.connection.cursor()
-    return jsonify(ress)
     dataCur = cur.execute(ress)
+    mysql.connection.commit()
     
-    return dataCur
+    return jsonify(dataCur)
     
 @app.route('/downloadExercice', methods=["GET", "POST"])
 def downloadExercice():
     response = requests.get('http://kireta.pythonanywhere.com/getExerciceData')
     data = response.json()
 
-    ress="truncate table cours;"
+    ress=""
 
     col = ""
     val = ""
     isString = ["titre", "description", "contenue", "mediaPath", "imgPath", "imgReponsePath", "cube_needed", "has_finished", "coord_finish"]
     for item in data:
-        col = ""
-        val += "("
+        col = ''
+        val += '('
         for value in item:
-            col += " " + str(value) + ","
-            # check if field is string field, add " "
+            col += ' ' + str(value) + ','
+            # check if field is string field, add ' '
             if str(value) in isString:
-                val += "\"" + str(item[value]) + "\","
+                convertedValue = str(item[value]).replace("\\", " ")
+                val += '"' + convertedValue + '",'
             else:
-                val += " " + str(item[value]) + ","
+                val += ' ' + str(item[value]) + ','
         val = val[:-1]
-        val += "),<br>"
+        val += '),'
+    col = col[:-1]
     val = val[:-1]
-    ress += "insert into cours (" + col + ") values " + val + ";"
-    return ress
+
+    ress += 'INSERT INTO exercice (' + col + ') VALUES ' + val + ';'
+
+    cur = mysql.connection.cursor()
+    dataCur = cur.execute(ress)
+    mysql.connection.commit()
+
+    return jsonify(dataCur)
+
     
 
 app.run(debug=True, port=80, host='0.0.0.0')
